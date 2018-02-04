@@ -131,22 +131,25 @@ void Analyzer::shift(int state, Word& input) {
  *
  */
 void Analyzer::reduce(int index) {
+    double num, num2;
+    string s;
+    
     switch (index) {
     // 右部长为1
     case 2:
     case 5:
     case 8:
     case 12:
-        double num = symbol.top().getValue();
+        num = symbol.top().getValue();
         this->pop();
         symbol.push(Word(LEFT_PART[index], num));
         break;
     // 右部长为2
     case 10:
     case 11:
-        double num = symbol.top().getValue();
+        num = symbol.top().getValue();
         this->pop();
-        string s = symbol.top().getWord();
+        s = symbol.top().getWord();
         if (s == "-") num = -num;
         this->pop();
         symbol.push(Word(LEFT_PART[index], num));
@@ -154,7 +157,7 @@ void Analyzer::reduce(int index) {
     // 括号
     case 9:
         this->pop();
-        double num = symbol.top().getValue();
+        num = symbol.top().getValue();
         this->pop();
         this->pop();
         symbol.push(Word(LEFT_PART[index], num));
@@ -164,13 +167,13 @@ void Analyzer::reduce(int index) {
     case 4:
     case 6:
     case 7:
-        double num1 = symbol.top().getValue();
+        num = symbol.top().getValue();
         this->pop();
-        string s = symbol.top().getWord();
+        s = symbol.top().getWord();
         this->pop();
-        double num2 = symbol.top().getValue();
+        num2 = symbol.top().getValue();
         this->pop();
-        symbol.push(Word(LEFT_PART[index], calculate(num2, s, num1)));
+        symbol.push(Word(LEFT_PART[index], calculate(num2, s, num)));
         break;
     default:
         break;
