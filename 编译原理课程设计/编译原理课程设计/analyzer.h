@@ -3,28 +3,28 @@
 using namespace std;
 
 /*
-ËãÊõ±í´ïÊ½ÎÄ·¨
-<ÎŞ·ûºÅÕûÊı>¡Ë£½ <Êı×Ö>{<Êı×Ö>}
-<±êÖ¾·û>¡Ë£½ <×ÖÄ¸>{<×ÖÄ¸>£ü<Êı×Ö>}
-<±í´ïÊ½>¡Ë£½ [£«£ü£­]<Ïî>{<¼Ó·¨ÔËËã·û><Ïî>}
-<Ïî>¡Ë£½ <Òò×Ó>{<³Ë·¨ÔËËã·û><Òò×Ó>}
-<Òò×Ó>¡Ë£½ <±êÖ¾·û>£ü<ÎŞ·ûºÅÕûÊı>£ü¡®£¨¡¯<±í´ïÊ½>¡®£©¡¯
-<¼Ó·¨ÔËËã·û>¡Ë£½ £«£ü£­
-<³Ë·¨ÔËËã·û>¡Ë£½ £ª£ü£¯
+ç®—æœ¯è¡¨è¾¾å¼æ–‡æ³•
+<æ— ç¬¦å·æ•´æ•°> âˆ·ï¼ <æ•°å­—>{<æ•°å­—>}
+<æ ‡å¿—ç¬¦> âˆ·ï¼ <å­—æ¯>{<å­—æ¯>ï½œ<æ•°å­—>}
+<è¡¨è¾¾å¼> âˆ·ï¼ [ï¼‹ï½œï¼]<é¡¹>{<åŠ æ³•è¿ç®—ç¬¦><é¡¹>}
+<é¡¹> âˆ·ï¼ <å› å­>{<ä¹˜æ³•è¿ç®—ç¬¦><å› å­>}
+<å› å­> âˆ·ï¼ <æ ‡å¿—ç¬¦>ï½œ<æ— ç¬¦å·æ•´æ•°>ï½œ'ï¼ˆ'<è¡¨è¾¾å¼>'ï¼‰'
+<åŠ æ³•è¿ç®—ç¬¦> âˆ·ï¼ ï¼‹ï½œï¼
+<ä¹˜æ³•è¿ç®—ç¬¦> âˆ·ï¼ ï¼Šï½œï¼
 
-²úÉúÊ½
-S¡ä¡ú S
-S ¡ú E
-E ¡ú E+T|E-T|T
-T ¡ú T*F|T/F|F
-F ¡ú (E)|+i|-i|i
+äº§ç”Ÿå¼
+Sâ€²â†’ S
+S â†’ E
+E â†’ E+T|E-T|T
+T â†’ T*F|T/F|F
+F â†’ (E)|+i|-i|i
 */
 
 class Analyzer {
 private:
     vector<Word>::size_type index;
-    stack<int> state;  //×´Ì¬Õ»
-    stack<Word> symbol;  //·ûºÅÕ»
+    stack<int> state;  //çŠ¶æ€æ ˆ
+    stack<Word> symbol;  //ç¬¦å·æ ˆ
     Word& readWord();
     int readState();
     SLR& compare(int state, Word& input);
@@ -40,7 +40,7 @@ public:
 };
 
 /*
- * ¹¹Ôìº¯Êı
+ * æ„é€ å‡½æ•°
  *
  */
 Analyzer::Analyzer() : state(), symbol() {
@@ -48,8 +48,8 @@ Analyzer::Analyzer() : state(), symbol() {
 }
 
 /*
- * ¶ÁÈ¡·ûºÅ
- * @return µ±Ç°·ûºÅ
+ * è¯»å–ç¬¦å·
+ * @return å½“å‰ç¬¦å·
  *
  */
 Word& Analyzer::readWord() {
@@ -57,8 +57,8 @@ Word& Analyzer::readWord() {
 }
 
 /*
- * ¶ÁÈ¡×´Ì¬
- * @return µ±Ç°×´Ì¬
+ * è¯»å–çŠ¶æ€
+ * @return å½“å‰çŠ¶æ€
  *
  */
 int Analyzer::readState() {
@@ -66,26 +66,26 @@ int Analyzer::readState() {
 }
 
 /*
- * Óï·¨·ÖÎö
+ * è¯­æ³•åˆ†æ
  *
  */
 void Analyzer::analySyntax() {
     state.push(0);
-    symbol.push(Word(SRP, "#"));  //³õÊ¼»¯·ûºÅÕ»ºÍ×´Ì¬Õ»
+    symbol.push(Word(SRP, "#"));  //åˆå§‹åŒ–ç¬¦å·æ ˆå’ŒçŠ¶æ€æ ˆ
     while (true) {
         int cur_state = readState();
         Word cur_input = readWord();
         SLR result = compare(cur_state, cur_input);
         switch (result.getType()) {
         case 0:
-            error("Óï·¨´íÎó£¡ÔÚ±í´ïÊ½ÖĞ¡°" + cur_input.getWord() + "¡±¸½½ü£¬Î»ÖÃ£º", index);
+            error("è¯­æ³•é”™è¯¯ï¼åœ¨è¡¨è¾¾å¼ä¸­â€œ" + cur_input.getWord() + "â€é™„è¿‘ï¼Œä½ç½®ï¼š", index);
             break;
         case 1:
-            //ÒÆ½ø
+            //ç§»è¿›
             shift(result.getValue(), cur_input);
             break;
         case 2:
-            //¹éÔ¼
+            //å½’çº¦
             reduce(result.getValue());
         case 3:
             //GOTO
@@ -103,20 +103,20 @@ void Analyzer::analySyntax() {
 
 
 /*
- * ±È½Ï
- * @param int ×´Ì¬
- * @param Word& ÊäÈë
- * @return ±È½Ï½á¹û
+ * æ¯”è¾ƒ
+ * @param int çŠ¶æ€
+ * @param Word& è¾“å…¥
+ * @return æ¯”è¾ƒç»“æœ
  *
  */
 SLR& Analyzer::compare(int state, Word& input) {
-    return slr_table[state][input.getType()];
+    return SLR_TABLE[state][input.getType()];
 }
 
 /*
- * ÒÆ½ø
- * @param int ×´Ì¬
- * @param Word& ·ûºÅ
+ * ç§»è¿›
+ * @param int çŠ¶æ€
+ * @param Word& ç¬¦å·
  *
  */
 void Analyzer::shift(int state, Word& input) {
@@ -126,55 +126,51 @@ void Analyzer::shift(int state, Word& input) {
 }
 
 /*
- * ¹éÔ¼
- * @param int ²úÉúÊ½±àºÅ
+ * å½’çº¦
+ * @param int äº§ç”Ÿå¼ç¼–å·
  *
  */
 void Analyzer::reduce(int index) {
     switch (index) {
-    //ÓÒ²¿³¤Îª1
+    // å³éƒ¨é•¿ä¸º1
     case 2:
     case 5:
     case 8:
-    case 12: {
+    case 12:
         double num = symbol.top().getValue();
         this->pop();
-        symbol.push(Word(left_part[index], num));
-    }
+        symbol.push(Word(LEFT_PART[index], num));
         break;
-    //ÓÒ²¿³¤Îª2
+    // å³éƒ¨é•¿ä¸º2
     case 10:
-    case 11: {
+    case 11:
         double num = symbol.top().getValue();
         this->pop();
         string s = symbol.top().getWord();
         if (s == "-") num = -num;
         this->pop();
-        symbol.push(Word(left_part[index], num));
-    }
+        symbol.push(Word(LEFT_PART[index], num));
         break;
-    //À¨ºÅ
-    case 9: {
+    // æ‹¬å·
+    case 9:
         this->pop();
         double num = symbol.top().getValue();
         this->pop();
         this->pop();
-        symbol.push(Word(left_part[index], num));
-    }
+        symbol.push(Word(LEFT_PART[index], num));
         break;
-    //ÓÒ²¿³¤Îª3
+    // å³éƒ¨é•¿ä¸º3
     case 3:
     case 4:
     case 6:
-    case 7: {
+    case 7:
         double num1 = symbol.top().getValue();
         this->pop();
         string s = symbol.top().getWord();
         this->pop();
         double num2 = symbol.top().getValue();
         this->pop();
-        symbol.push(Word(left_part[index], calculate(num2, s, num1)));
-    }
+        symbol.push(Word(LEFT_PART[index], calculate(num2, s, num1)));
         break;
     default:
         break;
@@ -182,11 +178,11 @@ void Analyzer::reduce(int index) {
 }
 
 /*
- * ¼ÆËã
- * @param double ²Ù×÷Êı1
- * @param const string& ÔËËã·û
- * @param double ²Ù×÷Êı2
- * @return ¼ÆËã½á¹û
+ * è®¡ç®—
+ * @param double æ“ä½œæ•°1
+ * @param const string& è¿ç®—ç¬¦
+ * @param double æ“ä½œæ•°2
+ * @return è®¡ç®—ç»“æœ
  *
  */
 double Analyzer::calculate(double num1, const string& operate, double num2) {
@@ -198,7 +194,7 @@ double Analyzer::calculate(double num1, const string& operate, double num2) {
     case '*':
         return num1 * num2;
     case '/':
-        if (num2 == 0) error("³ıÊı²»ÄÜÎª0£¡");
+        if (num2 == 0) error("é™¤æ•°ä¸èƒ½ä¸º0ï¼");
         return num1 / num2;
     default:
         return 0;
@@ -206,9 +202,9 @@ double Analyzer::calculate(double num1, const string& operate, double num2) {
 }
 
 /*
- * ÏÔÊ¾´íÎóĞÅÏ¢
- * #param const string& ´íÎóĞÅÏ¢
- * @param vector<Word>::size_type Î»ÖÃ
+ * æ˜¾ç¤ºé”™è¯¯ä¿¡æ¯
+ * #param const string& é”™è¯¯ä¿¡æ¯
+ * @param vector<Word>::size_type ä½ç½®
  *
  */
 void Analyzer::error(const string& msg, vector<Word>::size_type index) {
@@ -218,7 +214,7 @@ void Analyzer::error(const string& msg, vector<Word>::size_type index) {
 }
 
 /*
- * ³öÕ»
+ * å‡ºæ ˆ
  *
  */
 void Analyzer::pop() {
@@ -227,14 +223,14 @@ void Analyzer::pop() {
 }
 
 /*
- * ÏÔÊ¾ÎÄ·¨
+ * æ˜¾ç¤ºæ–‡æ³•
  *
  */
 void Analyzer::show() {
-    cout << "¸Ã¿Î³ÌÉè¼ÆÎÄ·¨Îª£º" << endl;
-    cout << "S¡ä¡ú S" << endl;
-    cout << "S ¡ú E" << endl;
-    cout << "E ¡ú E + T | E - T | T" << endl;
-    cout << "T ¡ú T*F | T / F | F" << endl;
-    cout << "F ¡ú(E) | +i | -i | i" << endl;
+    cout << "è¯¥è¯¾ç¨‹è®¾è®¡æ–‡æ³•ä¸ºï¼š" << endl;
+    cout << "Sâ€²â†’ S" << endl;
+    cout << "S â†’ E" << endl;
+    cout << "E â†’ E + T | E - T | T" << endl;
+    cout << "T â†’ T*F | T / F | F" << endl;
+    cout << "F â†’(E) | +i | -i | i" << endl;
 }
